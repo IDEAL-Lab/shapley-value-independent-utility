@@ -63,13 +63,14 @@ pub fn traditional_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
     let seller_len = dataset.sellers.len();
     let shapley_values = dataset
         .sellers
-        .par_iter()
+        // .par_iter()
+        .iter()
         .copied()
         .map(|seller| {
             let contribution = (0..seller_len - 1)
                 .into_par_iter()
                 .map(move |k| {
-                    let utilities = dataset
+                    let (utility, count) = dataset
                         .sellers
                         .iter()
                         .copied()
@@ -83,18 +84,28 @@ pub fn traditional_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
                             subset.insert(seller);
                             let utility_with_seller =
                                 subset_utility_with_cache(dataset, subset, cache_ref)?;
-                            Ok(utility_with_seller - utility_without_seller)
+                            Ok((utility_with_seller - utility_without_seller, 1.))
                         })
-                        .collect::<Result<Vec<_>>>()?;
-
-                    Ok(utilities.par_iter().sum::<f64>() / utilities.len() as f64)
+                        .reduce(
+                            || Ok((0., 0.)),
+                            |a: Result<_>, b: Result<_>| {
+                                let a = a?;
+                                let b = b?;
+                                Ok((a.0 + b.0, a.1 + b.1))
+                            },
+                        )?;
+                    Ok(utility / count)
                 })
-                .collect::<Result<Vec<_>>>()?;
+                .reduce(
+                    || Ok(0.),
+                    |a: Result<_>, b: Result<_>| {
+                        let a = a?;
+                        let b = b?;
+                        Ok(a + b)
+                    },
+                )?;
 
-            Ok((
-                seller,
-                contribution.par_iter().sum::<f64>() / seller_len as f64,
-            ))
+            Ok((seller, contribution / seller_len as f64))
         })
         .collect::<Result<HashMap<SellerId, f64>>>()?;
     let total_time = Instant::now() - begin;
@@ -113,7 +124,7 @@ mod tests {
     use crate::utils::test_data_dir;
 
     #[test]
-    fn test_join() {
+    fn test() {
         let data_dir = test_data_dir();
         let world = DataSet::load(
             "world",
