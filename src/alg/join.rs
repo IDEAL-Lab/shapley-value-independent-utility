@@ -29,6 +29,8 @@ pub fn join(inputs: &HashMap<String, Cow<DataFrame>>, plan: &JoinPlan) -> Result
         }
     }
 
+    table.drop_duplicates(false, None)?;
+
     Ok(table)
 }
 
