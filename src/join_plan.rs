@@ -37,5 +37,78 @@ pub static PLANS: Lazy<HashMap<&'static str, JoinPlan>> = Lazy::new(|| {
         },
     );
 
+    plans.insert(
+        "tpch",
+        JoinPlan {
+            init_table: "region",
+            steps: vec! [
+                JoinStep {
+                    table_to_join: "nation",
+                    left_join_keys: vec!["r_regionkey"],
+                    right_join_keys: vec!["n_regionkey"]
+                },
+                JoinStep {
+                    table_to_join: "supplier",
+                    left_join_keys: vec!["n_nationkey"],
+                    right_join_keys: vec!["s_nationkey"],
+                },
+                JoinStep {
+                    table_to_join: "partsupp",
+                    left_join_keys: vec!["s_suppkey"],
+                    right_join_keys: vec!["ps_suppkey"],
+                },
+                JoinStep {
+                    table_to_join: "part",
+                    left_join_keys: vec!["ps_partkey"],
+                    right_join_keys: vec!["p_partkey"],
+                },
+                JoinStep {
+                    table_to_join: "lineitem",
+                    left_join_keys: vec!["p_partkey", "s_suppkey"],
+                    right_join_keys: vec!["l_partkey", "l_suppkey"],
+                },
+                JoinStep {
+                    table_to_join: "orders",
+                    left_join_keys: vec!["l_orderkey"],
+                    right_join_keys: vec!["o_orderkey"],
+                },
+                JoinStep {
+                    table_to_join: "customer",
+                    left_join_keys: vec!["o_custkey"],
+                    right_join_keys: vec!["c_custkey"],
+                },
+            ],
+        },
+    );
+
+    plans.insert(
+        "ssb",
+        JoinPlan {
+            init_table: "lineorder",
+            steps: vec![
+                JoinStep {
+                    table_to_join: "customer",
+                    left_join_keys: vec!["lo_custkey"],
+                    right_join_keys: vec!["c_custkey"],
+                },
+                JoinStep {
+                    table_to_join: "supplier",
+                    left_join_keys: vec!["lo_suppkey"],
+                    right_join_keys: vec!["s_suppkey"],
+                },
+                JoinStep {
+                    table_to_join: "part",
+                    left_join_keys: vec!["lo_partkey"],
+                    right_join_keys: vec!["p_partkey"],
+                },
+                JoinStep {
+                    table_to_join: "date",
+                    left_join_keys: vec!["lo_orderdate"],
+                    right_join_keys: vec!["d_datekey"],
+                },
+            ],
+        },
+    );
+    
     plans
 });
