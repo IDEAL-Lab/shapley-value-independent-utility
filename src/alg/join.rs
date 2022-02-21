@@ -1,4 +1,4 @@
-use crate::JoinPlan;
+use crate::{JoinPlan, ROW_ID_COL_NAME};
 use anyhow::{Context, Result};
 use polars::prelude::*;
 use std::{borrow::Cow, collections::HashMap};
@@ -28,6 +28,13 @@ pub fn join(inputs: &HashMap<String, Cow<DataFrame>>, plan: &JoinPlan) -> Result
             table.rename(*l, *r)?;
         }
     }
+
+    table
+        .rename(
+            ROW_ID_COL_NAME,
+            &format!("{}:{}", ROW_ID_COL_NAME, plan.init_table),
+        )
+        .ok();
 
     table.drop_duplicates(false, None)?;
 

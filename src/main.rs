@@ -60,13 +60,7 @@ fn main() -> Result<()> {
         .unwrap(),
     );
 
-    let out = BufWriter::new(
-        File::options()
-            .create(true)
-            .write(true)
-            .truncate(true)
-            .open(&opts.output)?,
-    );
+    let out = BufWriter::new(File::create(&opts.output)?);
     serde_json::to_writer(out, &result_json)?;
 
     Ok(())
