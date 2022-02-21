@@ -1,4 +1,4 @@
-use crate::{seller::SellerSet, table::Table};
+use crate::{SellerSet, Table};
 use anyhow::Result;
 use glob::glob;
 use std::{

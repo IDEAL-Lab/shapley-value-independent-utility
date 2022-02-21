@@ -1,4 +1,4 @@
-use crate::seller::{SellerId, SellerSet};
+use crate::{SellerId, SellerSet};
 use anyhow::{Context, Result};
 use polars::prelude::*;
 use serde::{Deserialize, Serialize};
