@@ -133,6 +133,8 @@ mod tests {
         )
         .unwrap();
         let r = traditional_scheme(&world).unwrap();
-        dbg!(r);
+        dbg!(&r);
+        let actual = r.shapley_values.values().sum::<f64>();
+        assert!(actual - 30670. < 1e-5);
     }
 }

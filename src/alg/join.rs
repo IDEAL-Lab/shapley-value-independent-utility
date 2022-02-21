@@ -61,7 +61,7 @@ mod tests {
             .map(|(k, v)| (k.to_owned(), Cow::Borrowed(&v.df)))
             .collect();
         let r = join(&tables, &PLANS["world"]).unwrap();
-        assert!(r.shape().0 > 0);
+        assert_eq!(r.shape().0, 30670);
         dbg!(r);
     }
 }
