@@ -41,11 +41,11 @@ pub static PLANS: Lazy<HashMap<&'static str, JoinPlan>> = Lazy::new(|| {
         "tpch",
         JoinPlan {
             init_table: "region",
-            steps: vec! [
+            steps: vec![
                 JoinStep {
                     table_to_join: "nation",
                     left_join_keys: vec!["r_regionkey"],
-                    right_join_keys: vec!["n_regionkey"]
+                    right_join_keys: vec!["n_regionkey"],
                 },
                 JoinStep {
                     table_to_join: "supplier",
@@ -109,6 +109,6 @@ pub static PLANS: Lazy<HashMap<&'static str, JoinPlan>> = Lazy::new(|| {
             ],
         },
     );
-    
+
     plans
 });
