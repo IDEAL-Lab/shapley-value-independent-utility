@@ -16,3 +16,12 @@ pub fn init_tracing_subscriber(default_filter: &str) -> Result<()> {
 pub fn test_data_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data")
 }
+
+pub fn setup_rayon(num_threads: Option<usize>) -> Result<()> {
+    let mut pool = rayon::ThreadPoolBuilder::new();
+    if let Some(num_threads) = num_threads {
+        pool = pool.num_threads(num_threads);
+    }
+    pool.build_global()?;
+    Ok(())
+}
