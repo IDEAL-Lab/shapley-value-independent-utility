@@ -58,11 +58,11 @@ impl DataSet {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::PathBuf;
+    use crate::utils::test_data_dir;
 
     #[test]
     fn test_load() {
-        let data_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data");
+        let data_dir = test_data_dir();
         let world = DataSet::load(
             "world",
             data_dir.join("world"),
