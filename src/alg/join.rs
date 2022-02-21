@@ -1,32 +1,35 @@
 use crate::JoinPlan;
 use anyhow::{Context, Result};
 use polars::prelude::*;
-use std::collections::HashMap;
+use std::{borrow::Cow, collections::HashMap};
 
-pub fn join(mut inputs: HashMap<String, LazyFrame>, plan: &JoinPlan) -> Result<DataFrame> {
-    let mut table = inputs
-        .remove(plan.init_table)
-        .context("cannot find init table")?;
+pub fn join(inputs: &HashMap<String, Cow<DataFrame>>, plan: &JoinPlan) -> Result<DataFrame> {
+    let mut table = DataFrame::default();
+    let init_table = inputs
+        .get(plan.init_table)
+        .context("cannot find init table")?
+        .as_ref();
 
-    for step in &plan.steps {
-        let table2 = inputs
-            .remove(step.table_to_join)
-            .context("cannot find table to join")?;
-        let left: Vec<_> = step.left_join_keys.iter().map(|k| col(*k)).collect();
-        let right: Vec<_> = step.right_join_keys.iter().map(|k| col(*k)).collect();
-        let join = table
-            .join_builder()
-            .with(table2)
-            .how(JoinType::Inner)
-            .left_on(left)
-            .right_on(right)
-            .suffix(format!(":{}", step.table_to_join))
-            .finish();
+    for (i, step) in plan.steps.iter().enumerate() {
+        let left_table = if i == 0 { init_table } else { &table };
+        let right_table = inputs
+            .get(step.table_to_join)
+            .context("cannot find table to join")?
+            .as_ref();
+        table = left_table.join(
+            right_table,
+            &step.left_join_keys,
+            &step.right_join_keys,
+            JoinType::Inner,
+            Some(format!(":{}", step.table_to_join)),
+        )?;
 
-        table = join.rename(step.left_join_keys.iter(), step.right_join_keys.iter());
+        for (l, r) in step.left_join_keys.iter().zip(step.right_join_keys.iter()) {
+            table.rename(*l, *r)?;
+        }
     }
 
-    Ok(table.collect()?)
+    Ok(table)
 }
 
 #[cfg(test)]
@@ -43,12 +46,13 @@ mod tests {
             data_dir.join("world-metadata"),
         )
         .unwrap();
-        let tables: HashMap<String, LazyFrame> = world
+        let tables: HashMap<String, Cow<DataFrame>> = world
             .tables
-            .into_iter()
-            .map(|(k, v)| (k, v.df.lazy()))
+            .iter()
+            .map(|(k, v)| (k.to_owned(), Cow::Borrowed(&v.df)))
             .collect();
-        let r = join(tables, &PLANS["world"]).unwrap();
+        let r = join(&tables, &PLANS["world"]).unwrap();
+        assert!(r.shape().0 > 0);
         dbg!(r);
     }
 }
