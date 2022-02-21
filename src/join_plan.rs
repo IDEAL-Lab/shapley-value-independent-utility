@@ -6,7 +6,8 @@ use polars::prelude::*;
 #[derive(Debug, Clone)]
 pub struct JoinStep {
     pub table_to_join: &'static str,
-    pub join_keys: Vec<(&'static str, &'static str)>,
+    pub left_join_keys: Vec<&'static str>,
+    pub right_join_keys: Vec<&'static str>,
 }
 
 #[derive(Debug, Clone)]
@@ -24,11 +25,13 @@ pub static PLANS: Lazy<HashMap<&'static str, JoinPlan>> = Lazy::new(|| {
             steps: vec![
                 JoinStep {
                     table_to_join: "country",
-                    join_keys: vec![("CountryCode", "Code")],
+                    left_join_keys: vec!["CountryCode"],
+                    right_join_keys: vec!["Code"],
                 },
                 JoinStep {
                     table_to_join: "countrylanguage",
-                    join_keys: vec![("Code", "CountryCode")],
+                    left_join_keys: vec!["Code"],
+                    right_join_keys: vec!["CountryCode"],
                 },
             ],
         },
