@@ -10,6 +10,7 @@ opt-level = 3
 
 [dependencies]
 anyhow = "1.0"
+dashmap = "5.1"
 derive_more = "0.99"
 glob = "0.3"
 itertools = "0.10"

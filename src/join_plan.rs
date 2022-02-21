@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-
 use once_cell::sync::Lazy;
-use polars::prelude::*;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct JoinStep {
