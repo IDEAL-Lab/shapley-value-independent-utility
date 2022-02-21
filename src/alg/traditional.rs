@@ -22,7 +22,7 @@ fn subset_utility(dataset: &DataSet, subset: &SellerSet) -> Result<f64> {
                         .seller_map
                         .get(&row_id)
                         .context("cannot get seller set")?;
-                    Ok(seller.is_subset(subset))
+                    Ok(seller.iter().any(|s| subset.contains(s)))
                 })
                 .collect::<Result<BooleanChunked>>()?;
             let mut df = table.df.filter(&mask)?;
@@ -67,7 +67,7 @@ pub fn traditional_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
         .iter()
         .copied()
         .map(|seller| {
-            let contribution = (0..seller_len - 1)
+            let contribution = (0..seller_len)
                 .into_par_iter()
                 .map(move |k| {
                     let (utility, count) = dataset
