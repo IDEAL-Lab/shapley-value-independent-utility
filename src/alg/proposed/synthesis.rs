@@ -45,20 +45,18 @@ impl Synthesis {
         sets.sort_unstable_by_key(|s| s.len());
         let mut skips = vec![false; sets.len()];
 
-        for (i, s_i) in sets.iter().enumerate() {
+        for i in 0..sets.len() {
             if skips[i] {
                 continue;
             }
 
-            for (j, s_j) in sets.iter().enumerate().skip(i + 1) {
+            for j in i + 1..sets.len() {
                 if skips[j] {
                     continue;
                 }
 
-                if s_i.is_subset(s_j) {
+                if sets[i].is_subset(&sets[j]) {
                     skips[j] = true;
-                } else if s_j.is_subset(s_i) {
-                    skips[i] = true;
                 }
             }
         }
