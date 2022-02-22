@@ -57,7 +57,7 @@ fn main() -> Result<()> {
 
     let mut result_json = serde_json::to_value(result)?;
     result_json.as_object_mut().unwrap().append(
-        &mut json!({
+        json!({
             "dataset": opts.name,
             "scheme": opts.scheme,
             "csv_dir": opts.csv_dir,
