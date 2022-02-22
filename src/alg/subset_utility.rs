@@ -21,7 +21,7 @@ pub fn subset_utility(dataset: &DataSet, subset: &SellerSet) -> Result<f64> {
                         .seller_map
                         .get(&row_id)
                         .context("cannot get seller set")?;
-                    Ok(seller.iter().any(|s| subset.contains(s)))
+                    Ok(seller.intersection(&subset).next().is_some())
                 })
                 .collect::<Result<BooleanChunked>>()?;
             let mut df = table.df.filter(&mask)?;
