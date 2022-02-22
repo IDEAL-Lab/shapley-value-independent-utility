@@ -25,11 +25,15 @@ struct Opts {
     #[structopt(short, long, parse(from_os_str))]
     output: PathBuf,
 
-    /// Scheme name
+    /// Scheme name. accepted values: [trad, perm, ours]
     #[structopt(short, long)]
     scheme: String,
 
-    /// Sample size
+    /// Scale (for proposed)
+    #[structopt(long, default_value = "1")]
+    scale: f64,
+
+    /// Sample size (for permutation)
     #[structopt(short = "l", long)]
     sample_size: Option<usize>,
 
@@ -47,12 +51,13 @@ fn main() -> Result<()> {
     let dataset = DataSet::load(&opts.name, &opts.csv_dir, &opts.meta_dir)?;
 
     let result = match opts.scheme.as_str() {
-        "traditional" => alg::traditional::traditional_scheme(&dataset)?,
-        "permutation" => alg::permutation::permutation_scheme(
+        "traditional" | "trad" => alg::traditional::traditional_scheme(&dataset)?,
+        "permutation" | "perm" => alg::permutation::permutation_scheme(
             &dataset,
             opts.sample_size.context("need sample size")?,
         )?,
-        _ => bail!("unknown scheme"),
+        "proposed" | "ours" => alg::proposed::proposed_scheme(&dataset, opts.scale)?,
+        _ => bail!("Unknown scheme. accepted values: [trad, perm, ours]"),
     };
 
     let mut result_json = serde_json::to_value(result)?;
