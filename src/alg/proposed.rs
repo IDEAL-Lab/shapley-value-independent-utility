@@ -67,7 +67,11 @@ pub fn proposed_scheme(dataset: &DataSet, scale: f64) -> Result<ShapleyResult> {
     info!("compute shapley value...");
     let (shapley_values, linear_count, lookup_count, comb_count) = syntheses
         .par_iter()
-        .map(|syn| {
+        .enumerate()
+        .map(|(i, syn)| {
+            if i % 100_000 == 0 {
+                info!("syn #{}", i);
+            }
             if let Some((count, k)) = syn.is_linear() {
                 let ans = cal_sv_linear(syn, count, k);
                 (ans, 1usize, 0, 0)
