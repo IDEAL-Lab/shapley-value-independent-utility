@@ -57,6 +57,7 @@ pub fn traditional_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
                     },
                 )?;
 
+            info!("seller #{} done", seller);
             Ok((seller, contribution / seller_len as f64))
         })
         .collect::<Result<HashMap<SellerId, f64>>>()?;

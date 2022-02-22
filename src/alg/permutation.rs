@@ -25,7 +25,7 @@ pub fn permutation_scheme(dataset: &DataSet, sample_size: usize) -> Result<Shapl
             let mut last_utility = 0.;
             let mut seller_set = SellerSet::default();
 
-            sellers
+            let ans = sellers
                 .into_iter()
                 .map(|seller| {
                     seller_set.insert(seller);
@@ -43,7 +43,10 @@ pub fn permutation_scheme(dataset: &DataSet, sample_size: usize) -> Result<Shapl
                         acc.insert(seller, u);
                         Ok(acc)
                     },
-                )
+                );
+
+            info!("sample #{} done", i);
+            ans
         })
         .reduce(
             || Ok(HashMap::new()),

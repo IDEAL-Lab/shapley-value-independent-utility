@@ -15,12 +15,15 @@ pub fn proposed_scheme(dataset: &DataSet, scale: f64) -> Result<ShapleyResult> {
     info!("proposed scheme...");
     let begin = Instant::now();
 
+    info!("join...");
     let join_df = join(
         |table_name| dataset.tables.get(table_name).map(|t| &t.df),
         PLANS
             .get(dataset.name.as_str())
             .context("cannot find join plan")?,
     )?;
+
+    info!("extract row_id_columns...");
     let row_id_columns: Vec<(String, Vec<RowId>)> = join_df
         .columns(
             dataset
@@ -44,6 +47,7 @@ pub fn proposed_scheme(dataset: &DataSet, scale: f64) -> Result<ShapleyResult> {
     let cols = row_id_columns.len();
     drop(join_df);
 
+    info!("extract syntheses...");
     let row_id_columns_ref = &row_id_columns;
     let syntheses: Vec<_> = (0..rows)
         .into_par_iter()
@@ -60,6 +64,7 @@ pub fn proposed_scheme(dataset: &DataSet, scale: f64) -> Result<ShapleyResult> {
         .collect();
     drop(row_id_columns);
 
+    info!("compute shapley value...");
     let (shapley_values, linear_count, lookup_count, comb_count) = syntheses
         .par_iter()
         .map(|syn| {
