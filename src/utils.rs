@@ -1,4 +1,6 @@
+use crate::SellerId;
 use anyhow::{Error, Result};
+use std::collections::HashMap;
 #[cfg(test)]
 use std::path::PathBuf;
 use tracing_subscriber::EnvFilter;
@@ -24,4 +26,27 @@ pub fn setup_rayon(num_threads: Option<usize>) -> Result<()> {
     }
     pool.build_global()?;
     Ok(())
+}
+
+#[inline]
+pub fn binom(k: usize, n: usize) -> usize {
+    let mut res = 1;
+    let mut n = n;
+
+    for d in 1..=k {
+        res *= n;
+        res /= d;
+        n -= 1;
+    }
+
+    res
+}
+
+#[inline]
+pub fn merge_sv(a: HashMap<SellerId, f64>, b: HashMap<SellerId, f64>) -> HashMap<SellerId, f64> {
+    let (to_consume, mut to_mutate) = if a.len() < b.len() { (a, b) } else { (b, a) };
+    for (seller, u) in to_consume {
+        *to_mutate.entry(seller).or_default() += u;
+    }
+    to_mutate
 }

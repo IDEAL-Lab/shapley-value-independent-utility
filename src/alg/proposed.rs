@@ -1,15 +1,17 @@
 use crate::{
-    alg::join::join, DataSet, RowId, SellerId, SellerSet, ShapleyResult, PLANS, ROW_ID_COL_NAME,
+    alg::join::join, utils::merge_sv, DataSet, RowId, ShapleyResult, PLANS, ROW_ID_COL_NAME,
 };
 use anyhow::{Context, Result};
-use polars::prelude::*;
 use rayon::prelude::*;
 use std::{collections::HashMap, mem::drop, time::Instant};
 
 mod synthesis;
 use synthesis::Synthesis;
 
-pub fn proposed_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
+mod synthesis_sv;
+use synthesis_sv::*;
+
+pub fn proposed_scheme(dataset: &DataSet, scale: f64) -> Result<ShapleyResult> {
     info!("proposed scheme...");
     let begin = Instant::now();
 
@@ -58,10 +60,33 @@ pub fn proposed_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
         .collect();
     drop(row_id_columns);
 
+    let (shapley_values, linear_count, lookup_count, comb_count) = syntheses
+        .par_iter()
+        .map(|syn| {
+            if let Some((count, k)) = syn.is_linear() {
+                let ans = cal_sv_linear(syn, count, k);
+                (ans, 1usize, 0, 0)
+            } else {
+                let (ans, lookup_count, comb_count) = cal_sv_non_linear(syn, scale);
+                (ans, 0usize, lookup_count, comb_count)
+            }
+        })
+        .reduce(
+            || (HashMap::new(), 0, 0, 0),
+            |a, b| (merge_sv(a.0, b.0), a.1 + b.1, a.2 + b.2, a.3 + b.3),
+        );
+
     let total_time = Instant::now() - begin;
     let avg_time = total_time / dataset.sellers.len() as u32;
     info!("done in {:?}", total_time);
-    todo!();
+    Ok(ShapleyResult {
+        shapley_values,
+        avg_time,
+        total_time,
+        linear_count,
+        lookup_count,
+        comb_count,
+    })
 }
 
 #[cfg(test)]
@@ -78,7 +103,7 @@ mod tests {
             data_dir.join("world-metadata"),
         )
         .unwrap();
-        let r = proposed_scheme(&world).unwrap();
+        let r = proposed_scheme(&world, 1.).unwrap();
         dbg!(&r);
         let actual = r.shapley_values.values().sum::<f64>();
         assert!(actual - 30670. < 1e-5);

@@ -54,3 +54,9 @@ impl FromIterator<u64> for SellerSet {
         Self(iter.into_iter().map(SellerId).collect())
     }
 }
+
+impl FromIterator<SellerId> for SellerSet {
+    fn from_iter<T: IntoIterator<Item = SellerId>>(iter: T) -> Self {
+        Self(iter.into_iter().collect())
+    }
+}

@@ -67,6 +67,7 @@ pub fn traditional_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
         shapley_values,
         avg_time,
         total_time,
+        ..Default::default()
     })
 }
 

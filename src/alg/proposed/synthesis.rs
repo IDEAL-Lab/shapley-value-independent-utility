@@ -1,4 +1,4 @@
-use crate::SellerSet;
+use crate::{SellerId, SellerSet};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -86,6 +86,14 @@ impl Synthesis {
         }
 
         Some((count, k))
+    }
+
+    pub fn unique_sellers(&self) -> HashSet<SellerId> {
+        let mut sellers = HashSet::new();
+        for syn in self.iter() {
+            sellers.extend(syn.iter().copied())
+        }
+        sellers
     }
 }
 

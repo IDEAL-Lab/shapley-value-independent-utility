@@ -1,5 +1,6 @@
 use crate::{
-    alg::subset_utility::subset_utility_with_cache, DataSet, SellerId, SellerSet, ShapleyResult,
+    alg::subset_utility::subset_utility_with_cache, utils::merge_sv, DataSet, SellerId, SellerSet,
+    ShapleyResult,
 };
 use anyhow::{Error, Result};
 use dashmap::DashMap;
@@ -49,11 +50,7 @@ pub fn permutation_scheme(dataset: &DataSet, sample_size: usize) -> Result<Shapl
             |a: Result<HashMap<SellerId, f64>>, b: Result<HashMap<SellerId, f64>>| {
                 let a = a?;
                 let b = b?;
-                let (to_consume, mut to_mutate) = if a.len() < b.len() { (a, b) } else { (b, a) };
-                for (seller, u) in to_consume {
-                    *to_mutate.entry(seller).or_default() += u;
-                }
-                Ok(to_mutate)
+                Ok(merge_sv(a, b))
             },
         )?;
     shapley_values.par_iter_mut().for_each(|(_, v)| {
@@ -67,6 +64,7 @@ pub fn permutation_scheme(dataset: &DataSet, sample_size: usize) -> Result<Shapl
         shapley_values,
         avg_time,
         total_time,
+        ..Default::default()
     })
 }
 

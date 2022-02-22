@@ -9,6 +9,10 @@ pub struct ShapleyResult {
     #[serde(with = "serde_time")]
     pub total_time: Duration,
     pub shapley_values: HashMap<SellerId, f64>,
+    // following is only used by proposed.
+    pub linear_count: usize,
+    pub lookup_count: usize,
+    pub comb_count: usize,
 }
 
 mod serde_time {
