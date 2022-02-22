@@ -63,6 +63,7 @@ fn main() -> Result<()> {
             "csv_dir": opts.csv_dir,
             "meta_dir": opts.meta_dir,
             "num_threads": opts.num_threads,
+            "sample_size": opts.sample_size,
         })
         .as_object_mut()
         .unwrap(),
