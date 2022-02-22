@@ -44,19 +44,21 @@ mod tests {
 
     #[test]
     fn test_join() {
-        let data_dir = test_data_dir();
-        let world = DataSet::load(
-            "world",
-            data_dir.join("world"),
-            data_dir.join("world-metadata"),
-        )
-        .unwrap();
-        let r = join(
-            |table_name| world.tables.get(table_name).map(|t| &t.df),
-            &PLANS["world"],
-        )
-        .unwrap();
-        assert_eq!(r.shape().0, 30670);
-        dbg!(r);
+        polars_core::POOL.install(|| {
+            let data_dir = test_data_dir();
+            let world = DataSet::load(
+                "world",
+                data_dir.join("world"),
+                data_dir.join("world-metadata"),
+            )
+            .unwrap();
+            let r = join(
+                |table_name| world.tables.get(table_name).map(|t| &t.df),
+                &PLANS["world"],
+            )
+            .unwrap();
+            assert_eq!(r.shape().0, 30670);
+            dbg!(r);
+        });
     }
 }

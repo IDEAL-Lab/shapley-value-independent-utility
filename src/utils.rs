@@ -1,5 +1,5 @@
 use crate::SellerId;
-use anyhow::{Error, Result};
+use anyhow::{ensure, Error, Result};
 use std::collections::HashMap;
 #[cfg(test)]
 use std::path::PathBuf;
@@ -19,12 +19,12 @@ pub fn test_data_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data")
 }
 
+// use the same thread pool across our crate and polars.
 pub fn setup_rayon(num_threads: Option<usize>) -> Result<()> {
-    let mut pool = rayon::ThreadPoolBuilder::new();
     if let Some(num_threads) = num_threads {
-        pool = pool.num_threads(num_threads);
+        std::env::set_var("POLARS_MAX_THREADS", format!("{}", num_threads));
+        ensure!(polars_core::POOL.current_num_threads() == num_threads);
     }
-    pool.build_global()?;
     Ok(())
 }
 

@@ -79,16 +79,18 @@ mod tests {
 
     #[test]
     fn test() {
-        let data_dir = test_data_dir();
-        let world = DataSet::load(
-            "world",
-            data_dir.join("world"),
-            data_dir.join("world-metadata"),
-        )
-        .unwrap();
-        let r = traditional_scheme(&world).unwrap();
-        dbg!(&r);
-        let actual = r.shapley_values.values().sum::<f64>();
-        assert!(actual - 30670. < 1e-5);
+        polars_core::POOL.install(|| {
+            let data_dir = test_data_dir();
+            let world = DataSet::load(
+                "world",
+                data_dir.join("world"),
+                data_dir.join("world-metadata"),
+            )
+            .unwrap();
+            let r = traditional_scheme(&world).unwrap();
+            dbg!(&r);
+            let actual = r.shapley_values.values().sum::<f64>();
+            assert!(actual - 30670. < 1e-5);
+        });
     }
 }
