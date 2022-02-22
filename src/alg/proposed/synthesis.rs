@@ -23,6 +23,23 @@ use std::collections::HashSet;
 pub struct Synthesis(pub HashSet<SellerSet>);
 
 impl Synthesis {
+    pub fn from_seller_sets<'a>(input: impl 'a + Iterator<Item = &'a SellerSet>) -> Self {
+        let mut ans = Self::default();
+        ans.insert(SellerSet::default());
+        for set in input {
+            let mut new_ans = Self::default();
+            for old_s in ans.iter() {
+                for seller in set.iter().copied() {
+                    let mut s = old_s.clone();
+                    s.insert(seller);
+                    new_ans.insert(s);
+                }
+            }
+            ans = new_ans;
+        }
+        ans
+    }
+
     pub fn minimal(&mut self) {
         let mut sets: Vec<_> = self.drain().collect();
         sets.sort_unstable_by_key(|s| s.len());
@@ -57,6 +74,28 @@ impl Synthesis {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_from_seller_set() {
+        let actual = Synthesis::from_seller_sets(
+            vec![
+                &vec![1, 2].into_iter().collect::<SellerSet>(),
+                &vec![1, 3].into_iter().collect::<SellerSet>(),
+            ]
+            .into_iter(),
+        );
+        let expect = Synthesis::new(
+            vec![
+                vec![1].into_iter().collect::<SellerSet>(),
+                vec![1, 2].into_iter().collect::<SellerSet>(),
+                vec![1, 3].into_iter().collect::<SellerSet>(),
+                vec![2, 3].into_iter().collect::<SellerSet>(),
+            ]
+            .into_iter()
+            .collect(),
+        );
+        assert_eq!(actual, expect);
+    }
 
     #[test]
     fn test_minimal() {
