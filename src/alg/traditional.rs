@@ -15,8 +15,7 @@ pub fn traditional_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
     let seller_len = dataset.sellers.len();
     let shapley_values = dataset
         .sellers
-        // .par_iter()
-        .iter()
+        .par_iter()
         .copied()
         .map(|seller| {
             let contribution = (0..seller_len)
