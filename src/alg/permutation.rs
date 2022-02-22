@@ -2,7 +2,7 @@ use crate::{
     alg::subset_utility::subset_utility_with_cache, utils::merge_sv, DataSet, SellerId, SellerSet,
     ShapleyResult,
 };
-use anyhow::{Error, Result};
+use anyhow::Result;
 use dashmap::DashMap;
 use rand::prelude::*;
 use rayon::prelude::*;
@@ -24,29 +24,18 @@ pub fn permutation_scheme(dataset: &DataSet, sample_size: usize) -> Result<Shapl
 
             let mut last_utility = 0.;
             let mut seller_set = SellerSet::default();
+            let mut ans = HashMap::new();
 
-            let ans = sellers
-                .into_iter()
-                .map(|seller| {
-                    seller_set.insert(seller);
-                    let subset_utility =
-                        subset_utility_with_cache(dataset, seller_set.clone(), cache_ref)?;
-                    let u = subset_utility - last_utility;
-                    last_utility = subset_utility;
-                    Ok::<_, Error>((seller, u))
-                })
-                .fold(
-                    Ok(HashMap::new()),
-                    |acc: Result<HashMap<SellerId, f64>>, x: Result<(SellerId, f64)>| {
-                        let mut acc = acc?;
-                        let (seller, u) = x?;
-                        acc.insert(seller, u);
-                        Ok(acc)
-                    },
-                );
+            for seller in sellers {
+                seller_set.insert(seller);
+                let subset_utility =
+                    subset_utility_with_cache(dataset, seller_set.clone(), cache_ref)?;
+                ans.insert(seller, subset_utility - last_utility);
+                last_utility = subset_utility;
+            }
 
             info!("sample #{} done", i);
-            ans
+            Ok(ans)
         })
         .reduce(
             || Ok(HashMap::new()),
