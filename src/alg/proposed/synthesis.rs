@@ -69,6 +69,24 @@ impl Synthesis {
             }
         }
     }
+
+    /// Return `Some((count, k))` if it is linear.
+    pub fn is_linear(&self) -> Option<(usize, usize)> {
+        let mut count = 0;
+        let mut k = 0;
+        for syn in self.iter() {
+            if syn.len() > 1 {
+                count += 1;
+                k = syn.len();
+            }
+
+            if count > 1 {
+                return None;
+            }
+        }
+
+        Some((count, k))
+    }
 }
 
 #[cfg(test)]
@@ -99,7 +117,7 @@ mod tests {
 
     #[test]
     fn test_minimal() {
-        let mut syns = Synthesis::new(
+        let mut syn = Synthesis::new(
             vec![
                 vec![1].into_iter().collect::<SellerSet>(),
                 vec![1, 2].into_iter().collect::<SellerSet>(),
@@ -114,7 +132,7 @@ mod tests {
             .into_iter()
             .collect(),
         );
-        syns.minimal();
+        syn.minimal();
         let expect = Synthesis::new(
             vec![
                 vec![1].into_iter().collect::<SellerSet>(),
@@ -126,6 +144,6 @@ mod tests {
             .into_iter()
             .collect(),
         );
-        assert_eq!(syns, expect);
+        assert_eq!(syn, expect);
     }
 }

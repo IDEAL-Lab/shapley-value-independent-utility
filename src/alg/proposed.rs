@@ -51,9 +51,9 @@ pub fn proposed_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
                 let row_id = row_ids[i];
                 &dataset.tables[table_name].seller_map[&row_id]
             });
-            let mut syns = Synthesis::from_seller_sets(seller_sets);
-            syns.minimal();
-            syns
+            let mut syn = Synthesis::from_seller_sets(seller_sets);
+            syn.minimal();
+            syn
         })
         .collect();
     drop(row_id_columns);
