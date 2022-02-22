@@ -15,7 +15,8 @@ pub fn permutation_scheme(dataset: &DataSet, sample_size: usize) -> Result<Shapl
 
     let mut shapley_values = (0..sample_size)
         .into_par_iter()
-        .map(|_| {
+        .map(|i| {
+            info!("sample #{}", i);
             let mut rng = thread_rng();
             let mut sellers: Vec<SellerId> = dataset.sellers.iter().copied().collect();
             sellers.shuffle(&mut rng);

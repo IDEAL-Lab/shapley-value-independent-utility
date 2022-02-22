@@ -18,6 +18,7 @@ pub fn traditional_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
         .par_iter()
         .copied()
         .map(|seller| {
+            info!("seller #{}", seller);
             let contribution = (0..seller_len)
                 .into_par_iter()
                 .map(move |k| {
