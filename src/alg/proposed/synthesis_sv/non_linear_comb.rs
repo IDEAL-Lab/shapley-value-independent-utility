@@ -23,7 +23,7 @@ fn get_utility_of_cardinality_of_set_union(syns: &[&SellerSet]) -> f64 {
         1 => return 1. / syns[0].len() as f64,
         2 => {
             return 1. / syns[0].len() as f64 + 1. / syns[1].len() as f64
-                - 1. / (syns[0].union(&syns[1]).count() as f64);
+                - 1. / (syns[0].union(syns[1]).count() as f64);
         }
         _ => {}
     }
@@ -88,6 +88,5 @@ pub fn cal_sv_non_linear_comb(
     let utility_without_current_seller =
         get_utility_of_cardinality_of_set_union(&syns_interaction_list);
 
-    let current_seller_sv = utility_with_current_seller - utility_without_current_seller;
-    current_seller_sv
+    utility_with_current_seller - utility_without_current_seller
 }

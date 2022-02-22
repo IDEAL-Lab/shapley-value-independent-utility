@@ -54,7 +54,7 @@ pub fn cal_sv_non_linear_lookup(
         with_flag: false,
     };
 
-    if init_subset.utility_with_current_seller(seller, &syns_with_current_seller) {
+    if init_subset.utility_with_current_seller(seller, syns_with_current_seller) {
         // when subset is empty; number_of_sub_combination = 1 and without_flag = false
         marginal_contribution_for_current_seller += 1.;
     }
@@ -73,8 +73,8 @@ pub fn cal_sv_non_linear_lookup(
                         new_s.next_id = next_id + 1;
                         new_s.subset.insert(rest_of_sellers[next_id]);
 
-                        if new_s.utility_with_current_seller(seller, &syns_with_current_seller) {
-                            if new_s.utility_without_current_seller(&syns_without_current_seller) {
+                        if new_s.utility_with_current_seller(seller, syns_with_current_seller) {
+                            if new_s.utility_without_current_seller(syns_without_current_seller) {
                                 // early stop
                                 return None;
                             } else {
