@@ -62,7 +62,7 @@ pub static PLANS: Lazy<HashMap<&'static str, JoinPlan>> = Lazy::new(|| {
                 },
                 JoinStep {
                     table_to_join: "lineitem",
-                    left_join_keys: vec!["p_partkey", "s_suppkey"],
+                    left_join_keys: vec!["p_partkey", "ps_suppkey"],
                     right_join_keys: vec!["l_partkey", "l_suppkey"],
                 },
                 JoinStep {
