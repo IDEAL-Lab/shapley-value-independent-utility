@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate tracing;
 
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use serde_json::json;
 use shapley_value::*;
 use std::{fs::File, io::BufWriter, path::PathBuf};
@@ -29,6 +29,10 @@ struct Opts {
     #[structopt(short, long)]
     scheme: String,
 
+    /// Sample size
+    #[structopt(short = "l", long)]
+    sample_size: Option<usize>,
+
     /// Number of threads
     #[structopt(short, long)]
     num_threads: Option<usize>,
@@ -44,6 +48,10 @@ fn main() -> Result<()> {
 
     let result = match opts.scheme.as_str() {
         "traditional" => alg::traditional::traditional_scheme(&dataset)?,
+        "permutation" => alg::permutation::permutation_scheme(
+            &dataset,
+            opts.sample_size.context("need sample size")?,
+        )?,
         _ => bail!("unknown scheme"),
     };
 
