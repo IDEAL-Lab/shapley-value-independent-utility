@@ -3,10 +3,10 @@ use anyhow::{Context, Result};
 use dashmap::DashMap;
 use polars::prelude::*;
 use rayon::prelude::*;
-use std::{borrow::Cow, collections::HashMap};
+use std::collections::HashMap;
 
 pub fn subset_utility(dataset: &DataSet, subset: &SellerSet) -> Result<f64> {
-    let tables: HashMap<String, Cow<DataFrame>> = dataset
+    let tables: HashMap<&str, DataFrame> = dataset
         .tables
         .par_iter()
         .map(|(table_name, table)| {
@@ -26,12 +26,12 @@ pub fn subset_utility(dataset: &DataSet, subset: &SellerSet) -> Result<f64> {
                 .collect::<Result<BooleanChunked>>()?;
             let mut df = table.df.filter(&mask)?;
             let _ = df.drop_in_place(ROW_ID_COL_NAME)?;
-            Ok((table_name.to_owned(), Cow::Owned(df)))
+            Ok((table_name.as_str(), df))
         })
         .collect::<Result<HashMap<_, _>>>()?;
 
     let df = join(
-        &tables,
+        |table_name| tables.get(table_name),
         PLANS
             .get(dataset.name.as_str())
             .context("cannot find join plan")?,

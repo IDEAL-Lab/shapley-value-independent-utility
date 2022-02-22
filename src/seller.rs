@@ -48,3 +48,9 @@ pub struct SellerId(pub u64);
 #[as_ref(forward)]
 #[as_mut(forward)]
 pub struct SellerSet(pub BTreeSet<SellerId>);
+
+impl FromIterator<u64> for SellerSet {
+    fn from_iter<T: IntoIterator<Item = u64>>(iter: T) -> Self {
+        Self(iter.into_iter().map(SellerId).collect())
+    }
+}
