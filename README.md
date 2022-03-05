@@ -3,8 +3,8 @@
 This repo contains the implementation of algrithms in our paper. 
 
 ## Install Dependencies
-OS: Ubuntu 20.04 LTS.
-Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh 
+* OS: Ubuntu 20.04 LTS.
+* Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh 
 
 ## Build
 ```bash
