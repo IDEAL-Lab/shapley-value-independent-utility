@@ -7,8 +7,10 @@ OS: Ubuntu 20.04 LTS.
 Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh 
 
 ## Build
-Cargo check
-Cargo build --release
+```bash
+cargo check
+cargo build --release
+```
 
 ## Source Data
 Source data: https://drive.google.com/drive/folders/1cSQa4S_ughm7x8rOUljig59DcRQMVJL1?usp=sharing 
