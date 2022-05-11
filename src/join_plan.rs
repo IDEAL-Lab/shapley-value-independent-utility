@@ -79,34 +79,5 @@ pub static PLANS: Lazy<HashMap<&'static str, JoinPlan>> = Lazy::new(|| {
         },
     );
 
-    plans.insert(
-        "ssb",
-        JoinPlan {
-            init_table: "lineorder",
-            steps: vec![
-                JoinStep {
-                    table_to_join: "customer",
-                    left_join_keys: vec!["lo_custkey"],
-                    right_join_keys: vec!["c_custkey"],
-                },
-                JoinStep {
-                    table_to_join: "supplier",
-                    left_join_keys: vec!["lo_suppkey"],
-                    right_join_keys: vec!["s_suppkey"],
-                },
-                JoinStep {
-                    table_to_join: "part",
-                    left_join_keys: vec!["lo_partkey"],
-                    right_join_keys: vec!["p_partkey"],
-                },
-                JoinStep {
-                    table_to_join: "date",
-                    left_join_keys: vec!["lo_orderdate"],
-                    right_join_keys: vec!["d_datekey"],
-                },
-            ],
-        },
-    );
-
     plans
 });
