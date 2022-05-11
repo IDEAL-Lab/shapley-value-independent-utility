@@ -1,8 +1,8 @@
 use crate::SellerId;
 use anyhow::{ensure, Error, Result};
-use std::collections::HashMap;
 #[cfg(test)]
 use std::path::PathBuf;
+use std::{cmp, collections::HashMap};
 use tracing_subscriber::EnvFilter;
 
 pub fn init_tracing_subscriber(default_filter: &str) -> Result<()> {
@@ -30,6 +30,7 @@ pub fn setup_rayon(num_threads: Option<usize>) -> Result<()> {
 
 #[inline]
 pub fn binom(k: usize, n: usize) -> usize {
+    let k = cmp::min(k, n - k);
     let mut res = 1;
     let mut n = n;
 
