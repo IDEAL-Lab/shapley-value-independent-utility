@@ -53,32 +53,32 @@ pub fn cal_sv_non_linear(syns: &Synthesis, scale: f64) -> (HashMap<SellerId, f64
                 } else {
                     syns_without_current_seller.push(syn);
                 }
+            }
 
-                let number_of_pow_for_syns = if syns_with_current_seller.is_empty() {
-                    syns_without_current_seller.len()
-                } else if syns_without_current_seller.is_empty() {
-                    syns_with_current_seller.len()
-                } else {
-                    syns_with_current_seller.len() * syns_without_current_seller.len()
-                };
+            let number_of_pow_for_syns = if syns_with_current_seller.is_empty() {
+                syns_without_current_seller.len()
+            } else if syns_without_current_seller.is_empty() {
+                syns_with_current_seller.len()
+            } else {
+                syns_with_current_seller.len() * syns_without_current_seller.len()
+            };
 
-                if sellers.len() as f64 <= scale * number_of_pow_for_syns as f64 {
-                    let u = non_linear_lookup::cal_sv_non_linear_lookup(
-                        &syns_with_current_seller,
-                        &syns_without_current_seller,
-                        &sellers,
-                        seller,
-                    );
-                    ans.insert(seller, u);
-                    lookup_count += 1;
-                } else {
-                    let u = non_linear_comb::cal_sv_non_linear_comb(
-                        &syns_with_current_seller,
-                        &syns_without_current_seller,
-                    );
-                    ans.insert(seller, u);
-                    comb_count += 1;
-                }
+            if sellers.len() as f64 <= scale * number_of_pow_for_syns as f64 {
+                let u = non_linear_lookup::cal_sv_non_linear_lookup(
+                    &syns_with_current_seller,
+                    &syns_without_current_seller,
+                    &sellers,
+                    seller,
+                );
+                ans.insert(seller, u);
+                lookup_count += 1;
+            } else {
+                let u = non_linear_comb::cal_sv_non_linear_comb(
+                    &syns_with_current_seller,
+                    &syns_without_current_seller,
+                );
+                ans.insert(seller, u);
+                comb_count += 1;
             }
             (ans, lookup_count, comb_count)
         })
