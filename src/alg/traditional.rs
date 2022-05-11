@@ -75,7 +75,7 @@ pub fn traditional_scheme(dataset: &DataSet) -> Result<ShapleyResult> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::test_data_dir;
+    use crate::utils::{assert_world_sv, test_data_dir};
 
     #[test]
     fn test() {
@@ -90,7 +90,8 @@ mod tests {
             let r = traditional_scheme(&world).unwrap();
             dbg!(&r);
             let actual = r.shapley_values.values().sum::<f64>();
-            assert!(actual - 30670. < 1e-5);
+            assert!((actual - 30670.).abs() < 1e-5);
+            assert_world_sv(&r.shapley_values);
         });
     }
 }

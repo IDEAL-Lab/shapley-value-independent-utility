@@ -19,6 +19,21 @@ pub fn test_data_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("data")
 }
 
+#[cfg(test)]
+pub fn assert_world_sv(actual: &HashMap<SellerId, f64>) {
+    use once_cell::sync::Lazy;
+    static EXPECT: Lazy<HashMap<SellerId, f64>> = Lazy::new(|| {
+        let data = std::fs::read(test_data_dir().join("world-ground-truth.json")).unwrap();
+        serde_json::from_slice(&data).unwrap()
+    });
+
+    assert_eq!(actual.len(), EXPECT.len());
+    for (s, u) in actual {
+        let u_e = EXPECT[s];
+        assert!((u - u_e).abs() < 1e-5);
+    }
+}
+
 // use the same thread pool across our crate and polars.
 pub fn setup_rayon(num_threads: Option<usize>) -> Result<()> {
     if let Some(num_threads) = num_threads {

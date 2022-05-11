@@ -78,7 +78,7 @@ mod tests {
             let r = permutation_scheme(&world, 50).unwrap();
             dbg!(&r);
             let actual = r.shapley_values.values().sum::<f64>();
-            assert!(actual - 30670. < 1e-5);
+            assert!((actual - 30670.).abs() < 1e-5);
         });
     }
 }
