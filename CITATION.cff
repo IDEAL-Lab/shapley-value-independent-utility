@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Luo
+    given-names: Xuan
+    affiliation: "Simon Fraser University"
+  - family-names: Pei
+    given-names: Jian
+    affiliation: "Duke University and Simon Fraser University"
+  - family-names: Cong
+    given-names: Zicun
+    affiliation: "Simon Fraser University"
+  - family-names: Xu
+    given-names: Cheng
+    affiliation: "Simon Fraser University"
+title: "On Shapley Value in Data Assemblage Under Independent Utility"
+url: https://github.com/IDEAL-Lab/shapley-value-independent-utility
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Luo
+      given-names: Xuan
+      affiliation: "Simon Fraser University"
+    - family-names: Pei
+      given-names: Jian
+      affiliation: "Duke University and Simon Fraser University"
+    - family-names: Cong
+      given-names: Zicun
+      affiliation: "Simon Fraser University"
+    - family-names: Xu
+      given-names: Cheng
+      affiliation: "Simon Fraser University"
+  title: "On Shapley Value in Data Assemblage Under Independent Utility"
+  journal: Proceedings of the VLDB Endowment
+  year: 2022
+  volume: 15
+  issue: 11
+  start: 2761
+  end: 2773
+  doi: 10.14778/3551793.3551829
